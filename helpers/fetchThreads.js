@@ -23,7 +23,7 @@ const fetchSingleThread = async ({ gmail, threadId }) => {
   });
 
   //length 1 of the thread means that this thread have only one message
-  //checking if the label SENT already not present, to eliminate the message sent by me
+  //checking if the label SENT already not present, to eliminate the message sent by myself
   if (
     res.data.messages.length === 1 &&
     res.data.messages[0].labelIds.indexOf("SENT") === -1

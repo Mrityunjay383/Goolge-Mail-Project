@@ -25,7 +25,7 @@ const runApp = async () => {
     //checking if there is any new thread
     if (gotThreads) {
       //looping over all threads received
-      for (const thread of gotThreads) {
+      for (let thread of gotThreads) {
         //fetching data of the single thread
         const singleThreadMessage = await fetchSingleThread({
           gmail,
