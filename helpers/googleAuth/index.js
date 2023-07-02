@@ -5,7 +5,10 @@ import { authenticate } from "@google-cloud/local-auth";
 import { google } from "googleapis";
 
 // If modifying these scopes, delete token.json.
-const SCOPES = ["https://mail.google.com/"];
+const SCOPES = [
+  "https://mail.google.com/",
+  "https://www.googleapis.com/auth/gmail.send",
+];
 
 // The file token.json stores the user's access and refresh tokens, and is
 // created automatically when the authorization flow completes for the first

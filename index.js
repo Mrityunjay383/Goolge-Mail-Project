@@ -6,6 +6,8 @@ import {
   fetchAllNewThreads,
   fetchSingleThread,
 } from "./helpers/fetchThreads.js";
+import sendReply from "./helpers/sendReply.js";
+import addLabelToMail from "./helpers/labels.js";
 
 const runApp = async () => {
   const auth = await authorize(); //authenticating the user locally
@@ -13,33 +15,48 @@ const runApp = async () => {
 
   //cron job running every minute
   cron.schedule("* * * * *", async () => {
-    const currentTimeStampInMins = Math.floor(new Date().getTime() / 1000);
-
-    //getting 1 minute before timestamp in mins
-    const checkTimeStampInMins = currentTimeStampInMins - 60;
-
+    //fetching all the new threads
     const gotThreads = await fetchAllNewThreads({
       gmail,
-      checkTimeStampInMins,
     });
 
     //checking if there is any new thread
-    if (gotThreads && gotThreads.length > 0) {
+    if (gotThreads) {
       //looping over all threads received
       for (const thread of gotThreads) {
         //fetching data of the single thread
-        const singleThread = await fetchSingleThread({
+        const singleThreadMessage = await fetchSingleThread({
           gmail,
           threadId: thread.id,
         });
 
-        //length 1 of the thread means that this thread have only one message
-        if (singleThread.length === 1) {
-        }
+        if (singleThreadMessage) {
+          //sending the reply to the mail
+          const sendMailData = await sendReply({
+            gmail,
+            threadId: singleThreadMessage.threadId,
+            header: singleThreadMessage.payload.headers,
+          });
 
-        console.log(`#2023183201546509 singleThread`, singleThread);
+          if (sendMailData) {
+            console.log(`#2023183221347164 Reply has been sent successfully`);
+
+            const labelAddedToMail = await addLabelToMail({
+              gmail,
+              labelName: "Auto Replied Mails",
+              threadId: singleThreadMessage.threadId,
+            });
+
+            if (labelAddedToMail) {
+              console.log(`#2023183224633360 Label Added Successfully`);
+            }
+          } else console.log(`#2023183221422460 Some Error occurred`);
+        } else
+          console.log(
+            `#2023183221122212 Message sent by you or message already replied`
+          );
       }
-    }
+    } else console.log(`#202318322850821 No new mails received`);
   });
 };
 
