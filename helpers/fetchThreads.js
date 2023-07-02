@@ -1,19 +1,19 @@
-const fetchAllNewThreads = async ({ gmail, startTimeStamp }) => {
+const fetchAllNewThreads = async ({ gmail, checkTimeStampInMins }) => {
   const res = await gmail.users.threads.list({
     userId: "me",
-    q: `after:${startTimeStamp}`, //getting all the mails received after our server starts
+    q: `after:${checkTimeStampInMins}`, //for getting all the mails received after a specific time
   });
 
   return res.data.threads;
 };
 
-const fetchSingleThread = async ({ gmail }) => {
+const fetchSingleThread = async ({ gmail, threadId }) => {
   const res = await gmail.users.threads.get({
     userId: "me",
-    id: "189155aaac576731",
+    id: threadId,
   });
 
-  console.log(`#2023183185435489 res`, res.data);
+  return res.data.messages;
 };
 
 export { fetchAllNewThreads, fetchSingleThread };

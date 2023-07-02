@@ -8,10 +8,11 @@
   },
   "author": "Mrityunjay",
   "license": "ISC",
-  "type":"module",
+  "type": "module",
   "dependencies": {
     "@google-cloud/local-auth": "^2.1.0",
     "googleapis": "^105.0.0",
+    "node-cron": "^3.0.2",
     "process": "^0.11.10"
   }
 }
