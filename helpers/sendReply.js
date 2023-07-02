@@ -51,8 +51,10 @@ const sendReply = async ({ gmail, header, threadId }) => {
     //getting important variables from the header of the received mail
     const headerParams = readHeader({ header });
 
+    //forming raw mail
     const rawMail = await makeMailBody(headerParams);
 
+    //sending message as a reply to the received message
     await gmail.users.messages.send({
       userId: "me",
       requestBody: {
@@ -62,8 +64,8 @@ const sendReply = async ({ gmail, header, threadId }) => {
     });
 
     return true;
-  } catch (e) {
-    console.log(`#202318321180205 e`, e);
+  } catch (err) {
+    console.log(`#202318321180205 err`, err);
     return false;
   }
 };

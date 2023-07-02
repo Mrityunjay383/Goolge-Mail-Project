@@ -1,6 +1,7 @@
-import { google } from "googleapis";
-import cron from "node-cron";
+import { google } from "googleapis"; //package for accessing gmail api
+import cron from "node-cron"; //package for running functions on a regular internal
 
+//importing helpers functions
 import authorize from "./helpers/googleAuth/index.js";
 import {
   fetchAllNewThreads,
@@ -9,6 +10,7 @@ import {
 import sendReply from "./helpers/sendReply.js";
 import addLabelToMail from "./helpers/labels.js";
 
+//driver function
 const runApp = async () => {
   const auth = await authorize(); //authenticating the user locally
   const gmail = google.gmail({ version: "v1", auth });
@@ -32,15 +34,16 @@ const runApp = async () => {
 
         if (singleThreadMessage) {
           //sending the reply to the mail
-          const sendMailData = await sendReply({
+          const isReplySent = await sendReply({
             gmail,
             threadId: singleThreadMessage.threadId,
             header: singleThreadMessage.payload.headers,
           });
 
-          if (sendMailData) {
+          if (isReplySent) {
             console.log(`#2023183221347164 Reply has been sent successfully`);
 
+            //adding label to the thread
             const labelAddedToMail = await addLabelToMail({
               gmail,
               labelName: "Auto Replied Mails",
@@ -49,7 +52,7 @@ const runApp = async () => {
 
             if (labelAddedToMail) {
               console.log(`#2023183224633360 Label Added Successfully`);
-            }
+            } else console.log(`#2023183221422460 Some Error occurred`);
           } else console.log(`#2023183221422460 Some Error occurred`);
         } else
           console.log(

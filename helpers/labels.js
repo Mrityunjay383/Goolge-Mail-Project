@@ -38,41 +38,58 @@ const addLabel = async ({ gmail, labelId, threadId }) => {
 };
 
 const createNewLabel = async ({ gmail, labelName }) => {
-  const res = await gmail.users.labels.create({
-    userId: "me",
-    requestBody: {
-      labelListVisibility: "labelShow",
-      messageListVisibility: "show",
-      name: labelName,
-    },
-  });
+  try {
+    const res = await gmail.users.labels.create({
+      userId: "me",
+      requestBody: {
+        labelListVisibility: "labelShow",
+        messageListVisibility: "show",
+        name: labelName,
+      },
+    });
 
-  return res.data.id;
+    return res.data.id;
+  } catch (err) {
+    console.log(`#202318323555153 err`, err);
+    return null;
+  }
 };
 
 const addLabelToMail = async ({ gmail, labelName, threadId }) => {
-  //fetching all the labels exist
-  const allLabels = await fetchLabels({ gmail });
+  try {
+    //fetching all the labels exist
+    const allLabels = await fetchLabels({ gmail });
 
-  //checking if the label already present and getting its id
-  const labelId = getLabelId({ allLabels, labelName });
+    //checking if the label already present and getting its id
+    const labelId = getLabelId({ allLabels, labelName });
 
-  if (labelId) {
-    const labelAddedSuccessfully = await addLabel({ gmail, labelId, threadId });
-    if (labelAddedSuccessfully) {
-      return true;
+    if (labelId) {
+      const labelAddedSuccessfully = await addLabel({
+        gmail,
+        labelId,
+        threadId,
+      });
+      if (labelAddedSuccessfully) {
+        return true;
+      }
+    } else {
+      //if label id is not already present, we need to create one and then add it
+      const newLabelId = await createNewLabel({ gmail, labelName });
+
+      if (newLabelId) {
+        const labelAddedSuccessfully = await addLabel({
+          gmail,
+          labelId: newLabelId,
+          threadId,
+        });
+        if (labelAddedSuccessfully) {
+          return true;
+        }
+      }
     }
-  } else {
-    //if label id is not already present, we need to create one and then add it
-    const newLabelId = await createNewLabel({ gmail, labelName });
-    const labelAddedSuccessfully = await addLabel({
-      gmail,
-      labelId: newLabelId,
-      threadId,
-    });
-    if (labelAddedSuccessfully) {
-      return true;
-    }
+  } catch (err) {
+    console.log(`#20231832343182 err`, err);
+    return false;
   }
 };
 
