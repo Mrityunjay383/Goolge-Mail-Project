@@ -12,6 +12,8 @@ import addLabelToMail from "./helpers/labels.js";
 
 //driver function
 const runApp = async () => {
+  console.log(`#20231840410451 Gmail Auto bot activated`);
+
   const auth = await authorize(); //authenticating the user locally
   const gmail = google.gmail({ version: "v1", auth });
 
